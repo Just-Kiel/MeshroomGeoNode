@@ -5,14 +5,6 @@ __version__ = "1.2"
 from meshroom.core import desc
 import os
 
-# import sys
-# print(sys.path)
-# sys.path.append('C:\\Users\\Aurore\\AppData\\Local\\Programs\\Python\\Python39\\Lib\\site-packages')
-# print(sys.path)
-
-# need this !
-# import osmnx
-
 class TestOSM(desc.Node):
     category = 'Geolocalisation'
     documentation = '''
@@ -92,14 +84,14 @@ This node allows to get an image of the localisation (like a screenshot of OpenS
             label="Distance From Input Point",
             description="Distance from input point to get image.",
             value=550,
-            range=(30, 1000, 1.0),
+            range=(30, 1000, 1.0), # should be more than 30, otherwise doesn't work
             uid=[0],
         ),
         desc.ChoiceParam(
             name='verboseLevel',
             label='Verbose Level',
             description='''verbosity level (critical, error, warning, info, debug).''',
-            value='debug',
+            value='info',
             values=['critical', 'error', 'warning', 'info', 'debug'],
             exclusive=True,
             uid=[],
@@ -116,11 +108,8 @@ This node allows to get an image of the localisation (like a screenshot of OpenS
             # Decimal degrees = Degrees + (Minutes/60) + (Seconds/3600)
             decLat = chunk.node.latInputPoint.value[0].value + (chunk.node.latInputPoint.value[1].value/60) + (chunk.node.latInputPoint.value[2].value/3600)
 
-            print(decLat)
-
             decLon = chunk.node.lonInputPoint.value[0].value + (chunk.node.lonInputPoint.value[1].value/60) + (chunk.node.lonInputPoint.value[2].value/3600)
 
-            print(decLon)
 
             os.system('python ./lib/meshroom/nodes/scripts/test_OSM.py '+ str(decLat) +' '+ str(decLon) + ' ' + fp + ' ' + str(chunk.node.dist.value))
             # os.system('python ./lib/meshroom/nodes/scripts/test_OSM.py '+ str(chunk.node.latInputPoint.value) +' '+ str(chunk.node.lonInputPoint.value) + ' ' + fp + ' ' + str(chunk.node.dist.value))
