@@ -108,7 +108,17 @@ This node allows to get an image of the localisation (like a screenshot of OpenS
             exclusive=True,
             uid=[],
             ),
-        ]
+    ]
+
+    outputs = [
+        desc.File(
+            name='output',
+            label='Image geolocalisation',
+            description='''Image geolocalisation.''',
+            value= desc.Node.internalFolder + "combine.png",
+            uid=[0],
+        ),
+    ]
 
     def processChunk(self, chunk):
         try:
