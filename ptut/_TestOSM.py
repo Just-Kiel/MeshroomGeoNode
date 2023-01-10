@@ -4,6 +4,7 @@ __version__ = "1.2"
 
 from meshroom.core import desc
 import os
+import json
 
 class TestOSM(desc.Node):
     category = 'Geolocalisation'
@@ -12,6 +13,22 @@ This node allows to get an image of the localisation (like a screenshot of OpenS
 '''
 
     inputs = [
+        desc.ChoiceParam(
+            name='method',
+            label='GPS coordinates method',
+            description='''GPS coordinates method''',
+            value="custom",
+            values=("custom", "auto"),
+            exclusive=True,
+            uid=[0],
+        ),
+        desc.File(
+            name='GPSFile',
+            label='GPS coordinates file',
+            description='''GPS coordinates file''',
+            value= "",
+            uid=[0],
+        ),
         desc.GroupAttribute(
             groupDesc = [
                 desc.FloatParam(
@@ -99,13 +116,27 @@ This node allows to get an image of the localisation (like a screenshot of OpenS
 
             fp = chunk.node.internalFolder
 
-            # convert degrees to decimal
-            # Decimal degrees = Degrees + (Minutes/60) + (Seconds/3600)
-            decLat = chunk.node.latInputPoint.value[0].value + (chunk.node.latInputPoint.value[1].value/60) + (chunk.node.latInputPoint.value[2].value/3600)
-            decLon = chunk.node.lonInputPoint.value[0].value + (chunk.node.lonInputPoint.value[1].value/60) + (chunk.node.lonInputPoint.value[2].value/3600)
+            if chunk.node.method.value == "custom":
+                # convert degrees to decimal
+                # Decimal degrees = Degrees + (Minutes/60) + (Seconds/3600)
+                decLat = chunk.node.latInputPoint.value[0].value + (chunk.node.latInputPoint.value[1].value/60) + (chunk.node.latInputPoint.value[2].value/3600)
+                decLon = chunk.node.lonInputPoint.value[0].value + (chunk.node.lonInputPoint.value[1].value/60) + (chunk.node.lonInputPoint.value[2].value/3600)
 
 
-            os.system('python ./lib/meshroom/nodes/scripts/test_OSM.py '+ str(decLat) +' '+ str(decLon) + ' ' + fp + ' ' + str(chunk.node.dist.value))
+                os.system('python ./lib/meshroom/nodes/scripts/test_OSM.py '+ str(decLat) +' '+ str(decLon) + ' ' + fp + ' ' + str(chunk.node.dist.value))
+            
+            if chunk.node.method.value == "auto":
+
+                # Opening JSON file
+                with open(chunk.node.GPSFile.value, 'r') as inputfile:
+                
+                    # Reading from json file
+                    json_object = json.load(inputfile)
+                
+                latitude = json_object["latitude"]
+                longitude = json_object["longitude"]
+                
+                os.system('python ./lib/meshroom/nodes/scripts/test_OSM.py '+ str(latitude) +' '+ str(longitude) + ' ' + fp + ' ' + str(chunk.node.dist.value))
 
         finally:
             chunk.logManager.end()

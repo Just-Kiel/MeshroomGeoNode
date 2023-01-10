@@ -52,7 +52,10 @@ This node allows to get GPS coordinates of a file.
                 json_object = json.load(inputfile)
 
             latitude = json_object["views"][0]["metadata"]["GPS:Latitude"]
+            latitudeRef = json_object["views"][0]["metadata"]["GPS:LatitudeRef"]
+
             longitude = json_object["views"][0]["metadata"]["GPS:Longitude"]
+            longitudeRef = json_object["views"][0]["metadata"]["GPS:LongitudeRef"]
         
             latPoint = [float(x) for x in latitude.split(", ")]
             lonPoint = [float(x) for x in longitude.split(", ")]
@@ -60,7 +63,10 @@ This node allows to get GPS coordinates of a file.
             # convert degrees to decimal
             # Decimal degrees = Degrees + (Minutes/60) + (Seconds/3600)
             decLat = latPoint[0] + (latPoint[1]/60) + (latPoint[2]/3600)
+            decLat = decLat if latitudeRef == "N" else -decLat
+
             decLon = lonPoint[0] + (lonPoint[1]/60) + (lonPoint[2]/3600)
+            decLon = decLon if longitudeRef == "E" else -decLon
 
             # Data to be written
             output = {
