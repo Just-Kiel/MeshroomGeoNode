@@ -3,17 +3,43 @@ import osmnx as ox
 from PIL import ImageChops
 from PIL import Image
 import sys
+import json
 
 # configure the inline image display
 extension = "png"
 size = 600
 dpi = 300
 
-point = (float(sys.argv[1]), float(sys.argv[2]))
-dist = int(sys.argv[4])
+argv = sys.argv
+argv = [element if "--" not in element else "" for element in argv]
+argv = [x for x in argv if x != ""]
+
+#all arguments
+method = argv[1]
+GPSauto = argv[2]
+pointCustom = (float(argv[3]), float(argv[4]))
+dist = int(argv[5])
+path = argv[8]
+finalFp = argv[7]
+
+#what method of localisation
+if method == "auto":
+    # Opening JSON file
+    with open(GPSauto, 'r') as inputfile:
+    
+        # Reading from json file
+        json_object = json.load(inputfile)
+    
+    latitude = json_object["latitude"]
+    longitude = json_object["longitude"]
+
+    point=(latitude, longitude)
+else:
+    point = pointCustom
+
 
 #### Get roads layer
-fp = sys.argv[3] + f"roads.{extension}"
+fp = path + f"roads.{extension}"
 roads = ox.plot_figure_ground(
     point=point,
     network_type="all",
@@ -26,7 +52,7 @@ roads = ox.plot_figure_ground(
 )
 
 
-fp = sys.argv[3] + f"buildings.{extension}"
+fp = path + f"buildings.{extension}"
 #### Get buildings layer
 tags = {"amenity": True, "building":True}
 gdf = ox.geometries_from_point(point, tags, dist=dist)
@@ -38,8 +64,8 @@ buildings = ox.plot_footprints(
     dpi=dpi
 )
 
-buildings = sys.argv[3] + f"buildings.{extension}"
-roads = sys.argv[3] + f"roads.{extension}"
+buildings = path + f"buildings.{extension}"
+roads = path + f"roads.{extension}"
 
 image1 = Image.open(buildings)
 image2 = Image.open(roads)
@@ -62,4 +88,4 @@ image1 = Image.open(buildings)
 
 # merging of 2 images (layers)
 image3 = ImageChops.add(image2, image1)
-image3 = image3.save(sys.argv[3] + f"combine.{extension}")
+image3 = image3.save(finalFp)
