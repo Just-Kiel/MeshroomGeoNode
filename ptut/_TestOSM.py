@@ -42,8 +42,6 @@ This node allows to get an image of the localisation (like a screenshot of OpenS
             name="latInputPoint",
             label="Latitude Input Point",
             description="Latitude of input point to get image.",
-            # value=48.8420489,
-            # range=(-90.0, 90.0, 0.0001),
         ),
         desc.GroupAttribute(
             groupDesc = [
@@ -75,9 +73,6 @@ This node allows to get an image of the localisation (like a screenshot of OpenS
             name="lonInputPoint",
             label="Longitude Input Point",
             description="Longitude of input point to get image.",
-            # value=2.6229377,
-            # range=(-180.0, 180.0, 0.0001),
-            # uid=[0],
         ),
         desc.IntParam(
             name="dist",
@@ -107,12 +102,10 @@ This node allows to get an image of the localisation (like a screenshot of OpenS
             # convert degrees to decimal
             # Decimal degrees = Degrees + (Minutes/60) + (Seconds/3600)
             decLat = chunk.node.latInputPoint.value[0].value + (chunk.node.latInputPoint.value[1].value/60) + (chunk.node.latInputPoint.value[2].value/3600)
-
             decLon = chunk.node.lonInputPoint.value[0].value + (chunk.node.lonInputPoint.value[1].value/60) + (chunk.node.lonInputPoint.value[2].value/3600)
 
 
             os.system('python ./lib/meshroom/nodes/scripts/test_OSM.py '+ str(decLat) +' '+ str(decLon) + ' ' + fp + ' ' + str(chunk.node.dist.value))
-            # os.system('python ./lib/meshroom/nodes/scripts/test_OSM.py '+ str(chunk.node.latInputPoint.value) +' '+ str(chunk.node.lonInputPoint.value) + ' ' + fp + ' ' + str(chunk.node.dist.value))
 
         finally:
             chunk.logManager.end()
