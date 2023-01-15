@@ -5,7 +5,7 @@ import os.path
 
 currentDir = os.path.dirname(os.path.abspath(__file__))
 
-class Display2DMap(desc.CommandLineNode):
+class Display2DMapWithBlender(desc.CommandLineNode):
     commandLine = '{blenderPathValue} -b --python {scriptPathValue} -- {allParams}'
 
     category = 'Geolocalisation'

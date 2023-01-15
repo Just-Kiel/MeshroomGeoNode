@@ -42,7 +42,7 @@ else:
 fp = path + f"roads.{extension}"
 roads = ox.plot_figure_ground(
     point=point,
-    network_type="all",
+    network_type="drive",
     default_width=3.3,
     filepath=fp,
     dpi=dpi,
@@ -51,10 +51,12 @@ roads = ox.plot_figure_ground(
     dist= dist
 )
 
+# TODO water path
+
 
 fp = path + f"buildings.{extension}"
 #### Get buildings layer
-tags = {"amenity": True, "building":True}
+tags = {"building":True, "water":True}
 gdf = ox.geometries_from_point(point, tags, dist=dist)
 buildings = ox.plot_footprints(
     gdf,

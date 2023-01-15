@@ -4,13 +4,12 @@ __version__ = "1.2"
 
 from meshroom.core import desc
 
-class SRTMDataTo3D(desc.CommandLineNode):
-    commandLine = 'python ./lib/meshroom/nodes/scripts/DEMto3DFULL.py {allParams}'
+class GetSunPosition(desc.CommandLineNode):
+    commandLine = 'python ./lib/meshroom/nodes/scripts/sunPosition.py {methodValue} {GPSFileValue} {latInputPointValue} {lonInputPointValue} {timeFileValue} {outputValue}'
 
     category = 'Geolocalisation'
-
     documentation = '''
-This node allows to get SRTM Data represented as a mesh of the localisation.
+This node allows to get position (to display in 3D viewer then) of the sun.
 '''
 
     inputs = [
@@ -46,6 +45,13 @@ This node allows to get SRTM Data represented as a mesh of the localisation.
             range=(-90.0, 90.0, 0.0001),
             uid=[0],
         ),
+        desc.File(
+            name="timeFile",
+            label="Time from file",
+            description="Time from file.",
+            value="",
+            uid=[0],
+        ),
         desc.ChoiceParam(
             name='verboseLevel',
             label='Verbose Level',
@@ -62,14 +68,7 @@ This node allows to get SRTM Data represented as a mesh of the localisation.
             name='output',
             label='Output',
             description='''Output.''',
-            value= desc.Node.internalFolder + "result.obj",
-            uid=[0],
-        ),
-        desc.File(
-            name='outputFolder',
-            label='Output Folder',
-            description='''Output Folder''',
-            value= desc.Node.internalFolder,
+            value= desc.Node.internalFolder + "sunPosition.json",
             uid=[0],
         ),
     ]
