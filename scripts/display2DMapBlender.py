@@ -10,7 +10,6 @@ imagePath = argv[3]
 outputPath = argv[4]
 
 
-print(argv)
 try:
     camera = bpy.data.objects['Camera']
     light = bpy.data.objects['Light']

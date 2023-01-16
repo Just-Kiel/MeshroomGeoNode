@@ -3,8 +3,6 @@ __version__ = "1.0"
 from meshroom.core import desc
 import os.path
 
-currentDir = os.path.dirname(os.path.abspath(__file__))
-
 class DisplaySunWithBlender(desc.CommandLineNode):
     commandLine = '{blenderPathValue} -b --python {scriptPathValue} -- {allParams}'
 
@@ -19,7 +17,7 @@ class DisplaySunWithBlender(desc.CommandLineNode):
             label='Blender Path',
             description='''Path to blender executable''',
             value=os.environ.get('BLENDER',"C:/Program Files (x86)/Steam/steamapps/common/Blender/blender.exe"),
-            uid=[],
+            uid=[0],
             group='',
         ),
         desc.File(
@@ -27,8 +25,15 @@ class DisplaySunWithBlender(desc.CommandLineNode):
             label='Script Path',
             description='''Path to the internal script for rendering in Blender''',
             value="./lib/meshroom/nodes/scripts/generateSunBlender.py",
-            uid=[],
+            uid=[0],
             group='',
+        ),
+        desc.File(
+            name='sunPositionFile',
+            label='Sun position file Path',
+            description='''Sun position file Path''',
+            value="",
+            uid=[0],
         ),
     ]
 
@@ -38,6 +43,6 @@ class DisplaySunWithBlender(desc.CommandLineNode):
             label='Output',
             description='''Output''',
             value=desc.Node.internalFolder + "result.obj",
-            uid=[],
+            uid=[0],
         )
     ]

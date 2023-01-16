@@ -1,7 +1,27 @@
 import bpy
-import os
-import sys
 import math
+import sys
+import json
+
+# get arguments
+argv = sys.argv
+argv = [element if "--" not in element else "" for element in argv]
+argv = [x for x in argv if x != ""]
+
+sunPositionFile = argv[3]
+outputFile = argv[4]
+
+with open(sunPositionFile, 'r') as inputfile:
+    # Reading from json file
+    json_object = json.load(inputfile)
+
+offsetY = json_object["heightFromSun"]
+offsetZ = json_object["earthSun"]
+rotation = json_object["azimuth"]
+
+# Y = floor distance
+# Z = sun earth distance
+# rotate(azimuth)
 
 try:
     camera = bpy.data.objects['Camera']
@@ -29,11 +49,11 @@ def new_sphere(mylocation, mysize, myname):
     plane.data.name = myname + "_mesh"
     return
 
-new_sphere((0,0.15,15), 1, "MySun")
+new_sphere((0,offsetY,offsetZ), 10, "MySun")
 
 sun = bpy.context.object
 
-sun.rotation_euler = [0, 0, math.radians(181)]
+bpy.ops.transform.rotate(value=math.radians(rotation), orient_axis='Z', center_override=(0,0,0))
 
 sun.data.polygons.foreach_set('use_smooth',  [True] * len(sun.data.polygons))
 
@@ -51,8 +71,6 @@ if len(sun.data.materials.items()) != 0:
 else:
     sun.data.materials.append(mat)
     
-blend_file_path = bpy.data.filepath
-directory = os.path.dirname(blend_file_path)
-target_file = os.path.join(directory, 'pouic.obj')
+target_file = outputFile
 
 bpy.ops.export_scene.obj(filepath=target_file)
