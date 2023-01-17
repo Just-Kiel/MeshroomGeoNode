@@ -3,7 +3,6 @@ from __future__ import print_function
 __version__ = "1.2"
 
 from meshroom.core import desc
-
 import json
 
 class GetGPSCoordinates(desc.Node):
