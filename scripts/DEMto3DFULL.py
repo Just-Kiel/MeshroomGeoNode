@@ -36,7 +36,7 @@ else:
     latitude, longitude = pointCustom
 
 #TODO en parametres à revoir pour mieux comprendre l'affichage, facteur d'échelle à trouver (30 surement), recentrer
-offset = 1.0 / 100.0  # why not modify
+offset = 1.0 / 10.0  # why not modify
 latMax = latitude + offset #north
 latMin = latitude - offset #south
 
