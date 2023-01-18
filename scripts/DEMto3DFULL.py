@@ -35,7 +35,8 @@ if method == "auto":
 else:
     latitude, longitude = pointCustom
 
-offset = 1.0 / 100.0  # why not modify
+#TODO en parametres à revoir pour mieux comprendre l'affichage, facteur d'échelle à trouver (30 surement), recentrer
+offset = 1.0 / 10.0  # why not modify
 latMax = latitude + offset #north
 latMin = latitude - offset #south
 
@@ -59,7 +60,7 @@ with rasterio.open(path +"raster2.tif") as src:
 	#print(elev.shape)
 nrows, ncols = elev.shape
 x, y = np.meshgrid(np.arange(ncols), np.arange(nrows))
-z = elev
+z = elev/30
 mesh = mlab.mesh(x,y,z, colormap="bone")
 
 mlab.savefig(finalFp)
