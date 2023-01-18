@@ -119,8 +119,8 @@ This node allows to get GPS coordinates of a file.
 
             # Data to be written
             output = {
-                "latitudeMoy": latitudeAvg,
-                "longitudeMoy": longitudeAvg
+                "latitude": latitudeAvg,
+                "longitude": longitudeAvg
             }
 
             # Serializing json
