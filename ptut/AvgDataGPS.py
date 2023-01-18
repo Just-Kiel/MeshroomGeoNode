@@ -40,8 +40,6 @@ This node allows to get GPS coordinates of a file.
             uid=[],
         ),
     ]
-    
-    print('oui c meshroom')
 
     def processChunk(self, chunk):
         try:
@@ -54,7 +52,6 @@ This node allows to get GPS coordinates of a file.
                 json_object = json.load(inputfile)
 
 
-            print('oui')
             #get lat long from jsonfile
 
             latitude = []
@@ -68,9 +65,6 @@ This node allows to get GPS coordinates of a file.
             
 
             for i in range(len(json_object["views"])):
-                
-                print(i)
-
             	#get the value of lat & long
                 latitude.append(json_object["views"][i]["metadata"]["GPS:Latitude"])
                 latitudeRef.append(json_object["views"][i]["metadata"]["GPS:LatitudeRef"])
@@ -78,14 +72,10 @@ This node allows to get GPS coordinates of a file.
 
                 longitude.append(json_object["views"][i]["metadata"]["GPS:Longitude"])
                 longitudeRef.append(json_object["views"][i]["metadata"]["GPS:LongitudeRef"])
-                print(longitude[i])
-                print(longitudeRef[i])
                 
             	#get the separation between Degree, Minute, Seconde
                 latPoint = [float(x) for x in latitude[i].split(", ")]
                 lonPoint = [float(x) for x in longitude[i].split(", ")]
-                print("ici", i)
-                print(lonPoint)
 
             	# convert degrees to decimal
             	# Decimal degrees = Degrees + (Minutes/60) + (Seconds/3600)
@@ -99,11 +89,6 @@ This node allows to get GPS coordinates of a file.
                 
                 if longitudeRef[i] != "E" :
                     decLon[i] = -decLon[i]
-                
-                print("la", i)
-                print(decLon)
-                
-            print(decLat[0])
 
 
             for i in range(len(latitude)):
