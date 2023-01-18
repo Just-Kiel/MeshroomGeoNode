@@ -5,7 +5,7 @@ __version__ = "1.2"
 from meshroom.core import desc
 
 class LidarToMesh(desc.CommandLineNode):
-    commandLine = 'python ./lib/meshroom/nodes/scripts/LidarToMesh.py {LidarFileValue} {outputobjValue} {outputstlValue}'
+    commandLine = 'python ./lib/meshroom/nodes/scripts/LidarToMesh.py {LidarFileValue} {MeshMethodValue} {distValue} {outputobjValue} {outputstlValue}'
 
     category = 'Geolocalisation'
     documentation = '''
@@ -18,6 +18,24 @@ This node allows to get an image of the localisation (like a screenshot of OpenS
             label='Lidar file',
             description='''Lidar file''',
             value= "",
+            uid=[0],
+        ),
+        desc.ChoiceParam(
+            name='MeshMethod',
+            label='Mesh method',
+            description='''Mesh Method (Voxel, Delaunay Triangulation).''',
+            value='voxel',
+            values=['voxel', 'delaunay'],
+            exclusive=True,
+            uid=[],
+            group="",
+            ),
+        desc.IntParam(
+            name="dist",
+            label="Distance From Center (m)",
+            description="Distance from center point (m)",
+            value=200,
+            range=(50, 2000, 1.0), # should be more than 30, otherwise doesn't work
             uid=[0],
         ),
         desc.ChoiceParam(
