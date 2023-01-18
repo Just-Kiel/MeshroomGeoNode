@@ -60,7 +60,7 @@ with rasterio.open(path +"raster2.tif") as src:
 	#print(elev.shape)
 nrows, ncols = elev.shape
 x, y = np.meshgrid(np.arange(ncols), np.arange(nrows))
-z = elev
+z = elev/30
 mesh = mlab.mesh(x,y,z, colormap="bone")
 
 mlab.savefig(finalFp)
