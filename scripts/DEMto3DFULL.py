@@ -1,9 +1,11 @@
 import requests
 import pandas as pd
 import math
+from math import *
 import numpy as np
 import rasterio
 import mayavi.mlab as mlab
+import trimesh
 #necessite pyqt5
 
 # récupération des arguments
@@ -18,8 +20,11 @@ argv = [x for x in argv if x != ""]
 method = argv[1]
 GPSauto = argv[2]
 pointCustom = (float(argv[3]), float(argv[4]))
-finalFp = argv[6]
-path = argv[7]
+kilometers = float(argv[5])
+scale = float(argv[6])
+translation = float(argv[7])
+finalFp = argv[9]
+path = argv[10]
 
 #what method of localisation
 if method == "auto":
@@ -35,8 +40,7 @@ if method == "auto":
 else:
     latitude, longitude = pointCustom
 
-#TODO en parametres à revoir pour mieux comprendre l'affichage, facteur d'échelle à trouver (30 surement), recentrer
-offset = 1.0 / 10.0  # why not modify
+offset = kilometers * 1.0 / 1000  # why not modify
 latMax = latitude + offset #north
 latMin = latitude - offset #south
 
@@ -60,7 +64,22 @@ with rasterio.open(path +"raster2.tif") as src:
 	#print(elev.shape)
 nrows, ncols = elev.shape
 x, y = np.meshgrid(np.arange(ncols), np.arange(nrows))
-z = elev/30
-mesh = mlab.mesh(x,y,z, colormap="bone")
+z = elev / 30
+
+#centrage du mesh
+x -= int(ncols/2)
+y -= int(nrows/2)
+
+xScale = x * scale 
+yScale = y * scale 
+zScale = z * scale 
+
+zTranslate = zScale - translation
+
+mesh = mlab.mesh(xScale,zTranslate,yScale)
 
 mlab.savefig(finalFp)
+
+
+
+
