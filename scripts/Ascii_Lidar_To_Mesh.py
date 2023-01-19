@@ -3,6 +3,7 @@ import laspy as lp
 from stl import mesh
 import trimesh
 import matplotlib.tri as mtri
+import re
 
 #get arguments
 import argparse
@@ -36,8 +37,13 @@ elif input_file.endswith('.asc'):
 
   sizeCols = lines[0]
   sizeRows = lines[1]
-  #TODO precise
-  scaleSize = 25 #m
+
+  path = r'^.*_(\d{1,2})M_.*$'
+  result = re.search(path, input_file)
+
+  scaleSize = int(result.group(1)) #m
+
+  print(type(scaleSize))
 
   sizeCols = sizeCols.split(" ")
   sizeCols = int(sizeCols[-1:][0])
@@ -66,8 +72,7 @@ elif input_file.endswith('.asc'):
   points = np.column_stack((x_all, y_all, z_all))
   args.MeshMethod = "delaunay"
 
-  #TODO parameters
-  bbox_percent = args.dist/25000 #if we say that a tile is 2km wide
+  bbox_percent = args.dist/(scaleSize*1000) #if we say that a tile is 2km wide
 
 #get boundingbox of all point cloud 
 points_min = np.min(points, axis=0)
@@ -140,8 +145,8 @@ if args.MeshMethod == 'voxel':
   data = np.zeros(len(tris.triangles), dtype=mesh.Mesh.dtype)
   m = mesh.Mesh(data, remove_empty_areas=False)
   m.x[:] = x_all[tris.triangles]
-  m.y[:] = y_all[tris.triangles]
-  m.z[:] = z_all[tris.triangles]
+  m.y[:] = z_all[tris.triangles]
+  m.z[:] = -y_all[tris.triangles]
 
   #export stl
   m.save(args.ExportStl)
@@ -154,8 +159,8 @@ elif args.MeshMethod == "delaunay":
   data = np.zeros(len(tris.triangles), dtype=mesh.Mesh.dtype)
   m = mesh.Mesh(data, remove_empty_areas=False)
   m.x[:] = x_all[tris.triangles]
-  m.y[:] = y_all[tris.triangles]
-  m.z[:] = z_all[tris.triangles]
+  m.y[:] = z_all[tris.triangles]
+  m.z[:] = -y_all[tris.triangles]
 
   #Export STL
   m.save(args.ExportStl)

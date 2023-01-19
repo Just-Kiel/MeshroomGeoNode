@@ -4,8 +4,8 @@ __version__ = "1.2"
 
 from meshroom.core import desc
 
-class LidarToMesh(desc.CommandLineNode):
-    commandLine = 'python ./lib/meshroom/nodes/scripts/LidarToMesh.py {LidarFileValue} {MeshMethodValue} {distValue} {outputobjValue} {outputstlValue}'
+class AsciiLidarToMesh(desc.CommandLineNode):
+    commandLine = 'python ./lib/meshroom/nodes/scripts/Ascii_Lidar_To_Mesh.py {LidarFileValue} {MeshMethodValue} {distValue} {outputobjValue} {outputstlValue}'
 
     category = 'Geolocalisation'
     documentation = '''

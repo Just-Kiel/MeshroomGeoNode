@@ -4,8 +4,8 @@ __version__ = "1.2"
 
 from meshroom.core import desc
 
-class TestOSM(desc.CommandLineNode):
-    commandLine = 'python ./lib/meshroom/nodes/scripts/test_OSM.py {allParams}'
+class GetOSMData(desc.CommandLineNode):
+    commandLine = 'python ./lib/meshroom/nodes/scripts/get_OSM_data.py {allParams}'
 
     category = 'Geolocalisation'
     documentation = '''
