@@ -5,7 +5,7 @@ import os.path
 
 currentDir = os.path.dirname(os.path.abspath(__file__))
 
-class DisplayNorthWithoutBlender(desc.CommandLineNode):
+class DisplayNorth(desc.CommandLineNode):
     commandLine = 'python ./lib/meshroom/nodes/scripts/generateNorth.py {inputImageValue} {outputFolderValue}'
 
     category = 'Geolocalisation'
