@@ -8,7 +8,7 @@ import matplotlib.tri as mtri
 import argparse
 
 ap = argparse.ArgumentParser()
-ap.add_argument("LidarFile", help="lidar file", type=str)
+ap.add_argument("inputFile", help="input file", type=str)
 ap.add_argument("MeshMethod", help="mesh method", type=str)
 ap.add_argument("dist", help="dist", type=int)
 ap.add_argument("ExportObj", help="Export obj", type=str)
@@ -17,23 +17,62 @@ args = ap.parse_args()
 
 
 #import lidar file
-lidar_file = args.LidarFile
-point_cloud = lp.read(lidar_file)
+input_file = args.inputFile
 
 
-#CROP
-#store coordinates in "points"
-points = np.column_stack((point_cloud.x, point_cloud.y, point_cloud.z))
+if input_file.endswith('.las'):
+  point_cloud = lp.read(input_file)
+  #CROP
+  #store coordinates in "points"
+  points = np.column_stack((point_cloud.x, point_cloud.y, point_cloud.z))
+  #print("Number of points in original file:", len(points))
 
+  bbox_percent = args.dist/2000 #if we say that a tile is 2km wide
 
-#print("Number of points in original file:", len(points))
+elif input_file.endswith('.asc'):
+  fichier = open(input_file, "r")
+  fichier = fichier.read()
+  lines = [x for x in fichier.split('\n')]
+
+  sizeCols = lines[0]
+  sizeRows = lines[1]
+  #TODO precise
+  scaleSize = 25 #m
+
+  sizeCols = sizeCols.split(" ")
+  sizeCols = int(sizeCols[-1:][0])
+
+  sizeRows = sizeRows.split(" ")
+  sizeRows = int(sizeRows[-1:][0])
+
+  arraySize = sizeRows * sizeCols
+
+  print(f"Size of array : {arraySize}")
+
+  x_all = [None] * arraySize
+  y_all = [None] * arraySize
+
+  for i in range(arraySize):
+      x_all[i] = i*scaleSize%(scaleSize*sizeCols)
+      y_all[i] = (i//sizeCols)*scaleSize
+
+  #get z data from ascii file and put it in a single array
+  #each line containes 1000 values and there are 1000 lines
+  ascii_grid = np.loadtxt(input_file, skiprows=6)
+  z_all = ascii_grid.flatten()
+
+  x_all = np.array(x_all)
+  y_all = np.array(y_all)
+  points = np.column_stack((x_all, y_all, z_all))
+  args.MeshMethod = "delaunay"
+
+  #TODO parameters
+  bbox_percent = args.dist/25000 #if we say that a tile is 2km wide
 
 #get boundingbox of all point cloud 
 points_min = np.min(points, axis=0)
 points_max = np.max(points, axis=0)
 bbox_size = points_max - points_min
-
-bbox_percent = args.dist/2000 #if we say that a tile is 2km wide
 
 mean = np.mean(points, axis=0)
 

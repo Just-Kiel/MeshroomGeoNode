@@ -4,24 +4,15 @@ __version__ = "1.2"
 
 from meshroom.core import desc
 
-import json
-
-class GetTimeOfDataset(desc.CommandLineNode):
-    commandLine = 'python ./lib/meshroom/nodes/scripts/getTimeDataset.py {inputFileValue} {GPSFileValue} {outputValue}'
+class GetRegion(desc.CommandLineNode):
+    commandLine = 'python ./lib/meshroom/nodes/scripts/getRegion.py {GPSFileValue} {outputValue}'
 
     category = 'Geolocalisation'
     documentation = '''
-This node allows to get time of dataset.
+This node allows to get region of dataset.
 '''
 
     inputs = [
-        desc.File(
-            name='inputFile',
-            label='SfMData',
-            description='''input SfMData.''',
-            value= "",
-            uid=[0],
-        ),
         desc.File(
             name='GPSFile',
             label='GPS coordinates file',
@@ -43,9 +34,9 @@ This node allows to get time of dataset.
     outputs = [
         desc.File(
             name='output',
-            label='Time result',
-            description='Time from input file',
-            value=desc.Node.internalFolder + "time.json",
+            label='Region result',
+            description='Region from input file',
+            value=desc.Node.internalFolder + "region.json",
             uid=[],
         ),
     ]
