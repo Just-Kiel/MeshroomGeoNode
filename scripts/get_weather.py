@@ -1,36 +1,26 @@
 # Import Meteostat library and dependencies
 from datetime import datetime
-import matplotlib.pyplot as plt
 from meteostat import Point, Hourly
 
 import argparse
-from pathlib import Path
 import json
 
 # get arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("method", help="method of gps", type=str)
 ap.add_argument("GPSFile", help="GPSFile", type=str)
-ap.add_argument("latitudeCustom", help="latitudeCustom", type=float)
-ap.add_argument("longitudeCustom", help="longitudeCustom", type=float)
 ap.add_argument("timeFile", help="timeFile", type=str)
 ap.add_argument("outputFile", help="outputFile", type=str)
 args = ap.parse_args()
 
 # get coordinates
-if args.method == "auto":
-    # Opening JSON file
-    with open(args.GPSFile, 'r') as inputfile:
-    
-        # Reading from json file
-        json_object = json.load(inputfile)
-    
-    latitude = json_object["latitude"]
-    longitude = json_object["longitude"]    
-else:
+# Opening JSON file
+with open(args.GPSFile, 'r') as inputfile:
 
-    latitude = args.latitudeCustom
-    longitude = args.longitudeCustom
+    # Reading from json file
+    json_object = json.load(inputfile)
+
+latitude = json_object["latitude"]
+longitude = json_object["longitude"]    
 
 # get date
 with open(args.timeFile, 'r') as inputfile:
@@ -64,7 +54,7 @@ output = {
     "humidity": data['rhum'][0],
     "wind direction": data['wdir'][0],
     "wind speed": data['wspd'][0],
-    "weather condition": data['coco'][0]
+    "weather condition": (int)(data['coco'][0]),
 }
 
 # Serializing json
