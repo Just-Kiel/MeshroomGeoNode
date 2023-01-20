@@ -15,6 +15,23 @@ with open(args.Lambert93File, 'r') as inputfile:
 x = json_object["latitude"]
 y = json_object["longitude"]
 
+x=(x/1000) #meters to km
+y=(y/1000)
+# for x
+x = int(x) if int(x)%2==0 else int(x)-1
+# for y TODO because wrong
+y = int(y)+2 if int(y)%2!=0 else int(y)+1
+
+#887
+# if int(887)%2==0 int(887)
+# else int(887)-1
+#6245, 3545616516
+#6244
+# if (int(6245)%2 !=0) int(6245)+= 2
+# else int(6244)+=1
+
+print(y)
+
 path = r"^.*-(\d{4,})_(\d{4,})-\d{4,},(.*).*$"
 fichier = open("./lib/meshroom/nodes/scripts/TA_diff_pkk_lidarhd.csv", "r")
 fichier = fichier.read()
@@ -25,10 +42,6 @@ lines = lines[:-1]
 
 result = [re.search(path, line) for line in lines]
 result = [x for x in result if x != None]
-
-
-# x = 890
-# y = 6237
 
 result = [result[i] for i in range(len(result)) if int(result[i].group(1)) == x and int(result[i].group(2)) == y]
 

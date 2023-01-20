@@ -28,15 +28,6 @@ else:
 transformer = Transformer.from_crs("EPSG:4326", "EPSG:2154")
 x,y =transformer.transform(latitude, longitude)
 
-x=(x/1000) #meters to km
-y=(y/1000)
-
-# for x
-x = int(x) if int(x)%2==0 else int(x)+1
-
-# for y
-y = int(y) if int(y)%2!=0 else int(y)+1
-
 
 # Data to be written
 output = {
