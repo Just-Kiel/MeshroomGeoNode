@@ -17,7 +17,7 @@ This node allows to get position (to display in 3D viewer then) of the sun.
             name='method',
             label='GPS coordinates method',
             description='''GPS coordinates method''',
-            value="custom",
+            value="auto",
             values=("custom", "auto"),
             exclusive=True,
             uid=[0],
