@@ -4,8 +4,6 @@ __version__ = "1.2"
 
 from meshroom.core import desc
 
-import json
-
 class GetHdriFromWeather(desc.CommandLineNode):
     commandLine = 'python ./lib/meshroom/nodes/scripts/get_hdri.py {weatherFileValue} {outputValue}'
 
@@ -37,8 +35,8 @@ This node allows to get time of dataset.
         desc.File(
             name='output',
             label='Hdri result',
-            description='hdri from weather file',
-            value=desc.Node.internalFolder,
+            description='hdri from weather folder',
+            value=desc.Node.internalFolder+'hdri.exr',
             uid=[],
         ),
     ]

@@ -2,6 +2,33 @@ import re
 import argparse
 import json
 
+import logging
+
+# create a logger with a specified name
+logger = logging.getLogger('logger_hdri')
+
+# set the logging level
+logger.setLevel(logging.DEBUG)
+
+# create a file handler to write logs to a file
+file_handler = logging.FileHandler('logger_hdri.log')
+
+# create a stream handler to write logs to the console
+stream_handler = logging.StreamHandler()
+
+# set the logging format
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+stream_handler.setFormatter(formatter)
+
+# add the handlers to the logger
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
+
+# log some messages
+logger.info('This is an info message.')
+
+
 # get arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("weatherFile", help="weatherFile", type=str)
@@ -29,7 +56,6 @@ result = [re.search(path, line) for line in lines]
 result = [x for x in result if x != None]
 
 result = [result[i] for i in range(len(result)) if ((int)(result[i].group(1))) == weather]
-print(result)
 
 import requests
 import os
@@ -37,12 +63,20 @@ import os
 URL = result[0].group(3)
 filename = os.path.basename(URL)
 
-print(filename)
-
 response = requests.get(URL, stream=True)
 
 if response.status_code == 200:
-    with open(args.output+"/"+filename, 'wb') as out:
-        out.write(response.content)
+    logger.info("Download started")
+
+    total_size = int(response.headers.get('content-length', 0))
+    block_size = 1024
+    wrote = 0
+    # write the data to a file
+    with open(args.output, 'wb') as out:
+        for data in response.iter_content(block_size):
+            wrote = wrote + len(data)
+            progress = wrote / total_size * 100
+            logger.info(f'Download Progress: {progress}%')
+            out.write(data)
 else:
     print('Request failed: %d' % response.status_code)
