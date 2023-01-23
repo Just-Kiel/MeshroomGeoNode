@@ -34,11 +34,11 @@ try:
     for (dirpath, dirnames, filenames) in os.walk(inDir):
         count = 0
         # print(inDir)
-        print(dirpath)
+        print(f"Dir Path : {dirpath}")
         for i in range(len(filenames)):
             print(filenames[i])
             if filenames[i].endswith('.las') and count == 0:
-                
+                print("Copy")
                 # specify the file to be copied and the destination
                 src_file = dirpath+"/"+filenames[i]
                 print(src_file)
@@ -46,9 +46,13 @@ try:
 
                 # copy the file
                 shutil.copy(src_file, dst_file)
+                count+=1
             elif filenames[i].endswith('.las'):
+                print("append")
                 in_las = os.path.join(dirpath, filenames[i])
                 append_to_las(in_las, out_las)
+                count+=1
+            
         
         
     print('Finished without errors - merge_LAS.py')

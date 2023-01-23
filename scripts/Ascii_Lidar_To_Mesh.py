@@ -4,12 +4,15 @@ from stl import mesh
 import trimesh
 import matplotlib.tri as mtri
 import re
+from math import *
 
+import json
 #get arguments
 import argparse
 
 ap = argparse.ArgumentParser()
 ap.add_argument("inputFile", help="input file", type=str)
+ap.add_argument("LambertFile", help="Lambert File", type=str)
 ap.add_argument("MeshMethod", help="mesh method", type=str)
 ap.add_argument("dist", help="dist", type=int)
 ap.add_argument("ExportObj", help="Export obj", type=str)
@@ -78,25 +81,53 @@ elif input_file.endswith('.asc'):
 points_min = np.min(points, axis=0)
 points_max = np.max(points, axis=0)
 bbox_size = points_max - points_min
+# print(f"min={points_min}, max={points_max}, size before={bbox_size}")
 
 mean = np.mean(points, axis=0)
+print(f"mean={mean}")
 
-# print(f"min={points_min}, max={points_max}, size={bbox_size}")
-# print(f"percent={bbox_percent}")
+with open(args.LambertFile, 'r') as inputfile:
+    # Reading from json file
+    json_object = json.load(inputfile)
+
+x = json_object["latitude"]
+y = json_object["longitude"]
+
+delta = [0, 0, 0]
+
+if x > mean[0]:
+  delta[0] += abs(x-mean[0])
+else :
+  delta[0] -= abs(x-mean[0])
+
+if y > mean[1]:
+  delta[1] += abs(y-mean[1])
+else :
+  delta[1] -= abs(y-mean[1])
+
+mean = mean + delta
 
 #crop bounding box and crop point cloud from mean point and bounding box size
 crop_bbox = bbox_size * bbox_percent
 centered_points = [p - mean for p in points]
+# centered_points = [p - delta for p in centered_points]
+# print(f"centered after : {centered_points}")
+
 crop_points = [p for p in centered_points if abs(p[0]) < crop_bbox[0] and abs(p[1]) < crop_bbox[1]]
 
 # print("Points size: " + str(len(centered_points)))
-# print("Crop points size: " + str(len(crop_points)))
+print("Crop points size: " + str(len(crop_points)))
 
 # print("Split")
 x_all, y_all, z_all = np.hsplit(np.array(crop_points), 3)
 x_all = x_all.flatten()
 y_all = y_all.flatten()
 z_all = z_all.flatten()
+
+
+z_elev = z_all[int(len(z_all)/2)]
+z_all = [p - z_elev for p in z_all]
+z_all = np.array(z_all)
 
 
 if args.MeshMethod == 'voxel':

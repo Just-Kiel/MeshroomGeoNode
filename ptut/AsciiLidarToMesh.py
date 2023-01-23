@@ -5,7 +5,7 @@ __version__ = "1.2"
 from meshroom.core import desc
 
 class AsciiLidarToMesh(desc.CommandLineNode):
-    commandLine = 'python ./lib/meshroom/nodes/scripts/Ascii_Lidar_To_Mesh.py {LidarFileValue} {MeshMethodValue} {distValue} {outputobjValue} {outputstlValue}'
+    commandLine = 'python ./lib/meshroom/nodes/scripts/Ascii_Lidar_To_Mesh.py {LidarFileValue} {LambertFileValue} {MeshMethodValue} {distValue} {outputobjValue} {outputstlValue}'
 
     category = 'Geolocalisation'
     documentation = '''
@@ -17,6 +17,13 @@ This node allows to get an image of the localisation (like a screenshot of OpenS
             name='LidarFile',
             label='Lidar file',
             description='''Lidar file''',
+            value= "",
+            uid=[0],
+        ),
+        desc.File(
+            name='LambertFile',
+            label='Lambert coordinates file',
+            description='''Lambert coordinates file''',
             value= "",
             uid=[0],
         ),
