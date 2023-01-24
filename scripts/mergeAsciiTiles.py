@@ -2,6 +2,8 @@ import numpy as np
 import os
 import re
 
+from requests import head
+
 #get ascii files infos
 inDir = "ASCII"
 
@@ -12,24 +14,23 @@ for (dirpath, dirnames, filenames) in os.walk(inDir):
     print(dirpath)
     for i in range(len(filenames)):
         if filenames[i].endswith('.asc'):
-            # print(dirpath+"/"+filenames[i])
             result.append(re.search(path, dirpath+"/"+filenames[i]))
-
-# [print(res.group(1)) for res in result] #file path 
-# [print(res.group(2)) for res in result] #x coordinates
-# [print([res.group(2),res.group(3)]) for res in result] #y coordinates
-
 
 def getTile(point, scale):
     moduloX = point[0]%scale
     moduloY = point[1]%scale
-    # print(f"Point : {point}")
-    # print(f"ModuloX : {moduloX}")
-    # print(f"ModuloY : {moduloY}")
 
     tile = [point[0]-moduloX, point[1]+(scale-moduloY)]
-    # print(f"dalle : {dalle}")
+
     return tile
+
+def getScale(file):
+    file = open(file, "r")
+    line_cellsize = file.readlines()[4]
+    cellsize = line_cellsize.split(" ")
+    scale = float(cellsize[-1:][0])
+
+    return scale
 
 def writeHeader(file, merged):
     file = open(file, "r")
@@ -51,7 +52,7 @@ def writeHeader(file, merged):
     header += "yllcorner %s\n" % yllcorner 
     header += "cellsize %s\n" % cellsize
     header += "NODATA_value -9999"
-
+    print(xllcorner)
     return header
 
 def VerticalMergeAscii(tabFiles, count):
@@ -63,6 +64,8 @@ def VerticalMergeAscii(tabFiles, count):
     
     header = writeHeader(tabFiles[0], merged)
 
+    if not os.path.exists('merge'):
+        os.makedirs('merge')
     fp=f"merge/vmerged{count}.asc"
     np.savetxt(f"merge/vmerged{count}.asc", merged, header=header ,fmt="%3.2f")
     return fp
@@ -76,6 +79,8 @@ def HorizontalMergeAscii(tabFiles):
 
     header = writeHeader(tabFiles[0], merged)
 
+    if not os.path.exists('merge'):
+        os.makedirs('merge')
     fp=f"merge/merged.asc"
     np.savetxt(f"merge/merged.asc", merged, header=header ,fmt="%3.2f")
     return fp
@@ -83,8 +88,9 @@ def HorizontalMergeAscii(tabFiles):
 # get tiles
 sourcePoint = [843, 6553]
 dist = 30
-asciiDir = "ASCII"
-scale = 25
+scale = int(getScale(result[0].group(1)))
+
+print(scale)
 
 tileCenter = getTile(sourcePoint, scale)
 
@@ -93,19 +99,13 @@ pointBottomRight = [sourcePoint[0]+dist, sourcePoint[1]-dist]
 
 tileTopLeft = getTile(pointTopLeft, scale)
 tileBottomRight = getTile(pointBottomRight, scale)
-# print(f"Tile center : {tileCenter}")
-# print(f"Tile Top Left : {tileTopLeft}")
-# print(f"Tile Bottom Right : {tileBottomRight}")
 
 tiles = []
 
 for x in range (tileTopLeft[0], tileBottomRight[0]+scale, scale):
-    # print(x)
     tilesSameX = []
     for y in range (tileTopLeft[1], tileBottomRight[1]-scale, -scale):
-        # print(y)
         tilesSameX.append([x, y])
-
     tiles.append(tilesSameX)
 
 print(f"TILES : {tiles}")
@@ -151,30 +151,17 @@ for c in range(len(taby)):
     for r in range(maxdepth):
         if (taby[c][r] < max_of_rows[r]):
             taby[c].insert(r, max_of_rows[r])
-            fp[c].insert(r, 'no_data.asc')
-
+            if (int(scale) == 25):
+                fp[c].insert(r, 'external_files/ascii_nodata_25M.asc')
+            if (int(scale) == 5):
+                fp[c].insert(r, 'external_files/ascii_nodata_5M.asc')
+            if (int(scale) == 1):
+                fp[c].insert(r, 'external_files/ascii_nodata_1M.asc')
+            
 print(fp)
 
-'''
-#add no_data when no tile 
-for i in range (len(taby)):
-    tab_inter = []
-    for j in range (len(taby)):
-        tab_inter.append(int(taby[j][i]))
+print(dirpath)
 
-    # Python program to check if all
-    # elements in a List are same
-    # if([taby[0][i]]*len(tab_inter) != tab_inter):
-        maxx = max(tab_inter)
-        # print(f"max= {maxx}")
-        for j in range (len(taby)):
-            if (int(taby[j][i])<maxx):
-                # print(f"tab current : {tab_inter[j]}")
-                
-                fp[j].insert(j, 'no_data.asc')
-'''
-
-exit(0)
 print("vertical merge \n")
 verticalMergeTab = [None]*len(fp)
 for i in range(len(fp)):
