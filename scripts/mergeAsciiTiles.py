@@ -80,7 +80,6 @@ def HorizontalMergeAscii(tabFiles):
     np.savetxt(f"merge/merged.asc", merged, header=header ,fmt="%3.2f")
     return fp
 
-
 # get tiles
 sourcePoint = [843, 6553]
 dist = 30
@@ -112,13 +111,70 @@ for x in range (tileTopLeft[0], tileBottomRight[0]+scale, scale):
 print(f"TILES : {tiles}")
 
 fp = []
+taby = []
 for i in range(len(tiles)):
     fp.append([res.group(1) for res in result if [int(res.group(2)), int(res.group(3))] in tiles[i]])
-
+    taby.append([res.group(3) for res in result if [int(res.group(2)), int(res.group(3))] in tiles[i]])
 
 fp = [f for f in fp if f != []]
+taby = [y for y in taby if y != []]
+
+# reverse order so the order is right for the merge
+for i in range(len(taby)):
+    taby[i].sort(reverse = True)
+for i in range(len(fp)):
+    fp[i].sort(reverse = True)
+
+print(fp)
+print(taby)
+
+# find max length of all tabs and fill tabs with -1 value to reach maxlength
+maxdepth=0
+for i in range (len(taby)):
+    if (len(taby[i])>maxdepth):
+        maxdepth = len(taby[i])
+
+print(f"max length : {maxdepth}")
+
+for i in range(len(taby)):
+    if (len(taby[i]) < maxdepth) :
+        taby[i].append('-1')
+
+max_of_rows = []
+for i in range(maxdepth):
+    row = []
+    for column in taby:
+        row.append(column[i])
+    max_of_rows.append(max(row))
+
+for c in range(len(taby)):
+    for r in range(maxdepth):
+        if (taby[c][r] < max_of_rows[r]):
+            taby[c].insert(r, max_of_rows[r])
+            fp[c].insert(r, 'no_data.asc')
+
 print(fp)
 
+'''
+#add no_data when no tile 
+for i in range (len(taby)):
+    tab_inter = []
+    for j in range (len(taby)):
+        tab_inter.append(int(taby[j][i]))
+
+    # Python program to check if all
+    # elements in a List are same
+    # if([taby[0][i]]*len(tab_inter) != tab_inter):
+        maxx = max(tab_inter)
+        # print(f"max= {maxx}")
+        for j in range (len(taby)):
+            if (int(taby[j][i])<maxx):
+                # print(f"tab current : {tab_inter[j]}")
+                
+                fp[j].insert(j, 'no_data.asc')
+'''
+
+exit(0)
 print("vertical merge \n")
 verticalMergeTab = [None]*len(fp)
 for i in range(len(fp)):
