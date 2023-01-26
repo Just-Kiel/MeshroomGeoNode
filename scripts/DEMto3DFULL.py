@@ -54,7 +54,7 @@ south = str(latMin)
 east = str(lngMax)
 west = str(lngMin)
 
-url = 'https://portal.opentopography.org/API/globaldem?demtype=SRTMGL3&south='+south+'&north='+north+'&west='+west+'&east='+east+'&outputFormat=GTiff&API_Key=b3aae2cb0f7c823f84f2d2e98651c906'
+url = 'https://portal.opentopography.org/API/globaldem?demtype=SRTMGL1&south='+south+'&north='+north+'&west='+west+'&east='+east+'&outputFormat=GTiff&API_Key=b3aae2cb0f7c823f84f2d2e98651c906'
 response = requests.get(url)
 open(path +'raster2.tif','wb').write(response.content)
 
