@@ -6,7 +6,7 @@ from meshroom.core import desc
 
 import json
 
-class GetAverageGPSCoordinates(desc.Node):
+class GetGPSData(desc.Node):
     category = 'Geolocalisation'
     documentation = '''
 This node allows to get GPS coordinates of a file.
@@ -20,16 +20,7 @@ This node allows to get GPS coordinates of a file.
             value= "",
             uid=[0],
         ),
-        desc.ChoiceParam(
-            name='verboseLevel',
-            label='Verbose Level',
-            description='''verbosity level (critical, error, warning, info, debug).''',
-            value='info',
-            values=['critical', 'error', 'warning', 'info', 'debug'],
-            exclusive=True,
-            uid=[],
-            ),
-        ]
+    ]
 
     outputs = [
         desc.File(
@@ -68,7 +59,6 @@ This node allows to get GPS coordinates of a file.
             	#get the value of lat & long
                 latitude.append(json_object["views"][i]["metadata"]["GPS:Latitude"])
                 latitudeRef.append(json_object["views"][i]["metadata"]["GPS:LatitudeRef"])
-                print(latitude[i])
 
                 longitude.append(json_object["views"][i]["metadata"]["GPS:Longitude"])
                 longitudeRef.append(json_object["views"][i]["metadata"]["GPS:LongitudeRef"])

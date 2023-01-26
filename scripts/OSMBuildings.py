@@ -1,9 +1,6 @@
 import argparse
-from pathlib import Path
 import trimesh
 import numpy as np
-from PIL import Image
-import sys
 import json
 from math import *
 import math
@@ -11,7 +8,7 @@ import requests
 import geopandas as gpd
 from shapely import Polygon
 
-
+#TODO args better
 ap = argparse.ArgumentParser()
 ap.add_argument("method", help="method of gps", type=str)
 ap.add_argument("GPSFile", help="GPSFile", type=str)
@@ -147,4 +144,4 @@ with open(args.outputObj, 'w') as file:
     )
     
     
-  #si on est sur un bord de map, récupérer les maps autour, faire un paramètre
+  #TODO si on est sur un bord de map, récupérer les maps autour, faire un paramètre

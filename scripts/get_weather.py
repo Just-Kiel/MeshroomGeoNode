@@ -2,64 +2,53 @@
 from datetime import datetime
 from meteostat import Point, Hourly
 
-import argparse
 import json
 
-# get arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("GPSFile", help="GPSFile", type=str)
-ap.add_argument("timeFile", help="timeFile", type=str)
-ap.add_argument("outputFile", help="outputFile", type=str)
-args = ap.parse_args()
+#TODO json to dict
+def getWeather(GPSData, TimeData):
+    # get coordinates
+    # Opening JSON file
+    with open(GPSData, 'r') as inputfile:
 
-# get coordinates
-# Opening JSON file
-with open(args.GPSFile, 'r') as inputfile:
+        # Reading from json file
+        json_object = json.load(inputfile)
 
+    latitude = json_object["latitude"]
+    longitude = json_object["longitude"]    
+
+    # get date
     # Reading from json file
-    json_object = json.load(inputfile)
+    json_object = json.loads(TimeData)
 
-latitude = json_object["latitude"]
-longitude = json_object["longitude"]    
+    time = json_object["datetime"]
 
-# get date
-with open(args.timeFile, 'r') as inputfile:
-    
-    # Reading from json file
-    json_object = json.load(inputfile)
+    #add jet lag to time
+    offsetTime = json_object["offsetTime"]
+    time.append(offsetTime)
 
-time = json_object["datetime"]
+    datefile = tuple(int(element) for element in time)
 
-#add jet lag to time
-offsetTime = json_object["offsetTime"]
-time.append(offsetTime)
+    year, month, day, hour, minute, second, timezone = datefile
 
-datefile = tuple(int(element) for element in time)
+    # Set time period
+    ymd = datetime(year, month, day)
 
-year, month, day, hour, minute, second, timezone = datefile
+    # Create Point from coordinates
+    location = Point(latitude, longitude)
 
-# Set time period
-ymd = datetime(year, month, day)
+    # Get Weather Hourly data from the coordinates
+    data = Hourly(location, ymd, ymd)
+    data = data.fetch()
 
-# Create Point from coordinates
-location = Point(latitude, longitude)
+    # Data to be written
+    output = {
+        "temperature": data['temp'][0],
+        "humidity": data['rhum'][0],
+        "wind direction": data['wdir'][0],
+        "wind speed": data['wspd'][0],
+        "weather condition": (int)(data['coco'][0]),
+    }
 
-# Get Weather Hourly data from the coordinates
-data = Hourly(location, ymd, ymd)
-data = data.fetch()
-
-# Data to be written
-output = {
-    "temperature": data['temp'][0],
-    "humidity": data['rhum'][0],
-    "wind direction": data['wdir'][0],
-    "wind speed": data['wspd'][0],
-    "weather condition": (int)(data['coco'][0]),
-}
-
-# Serializing json
-json_object = json.dumps(output, indent=4)
-
-# Writing to sample.json
-with open(args.outputFile, "w") as outfile:
-    outfile.write(json_object)
+    # Serializing json
+    json_object = json.dumps(output, indent=4)
+    return json_object

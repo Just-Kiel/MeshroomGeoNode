@@ -1,87 +1,79 @@
 import re
-import argparse
-import json
 
 import logging
-
-# create a logger with a specified name
-logger = logging.getLogger('mylogger')
-
-# set the logging level
-logger.setLevel(logging.DEBUG)
-
-# create a file handler to write logs to a file
-file_handler = logging.FileHandler('mylog.log')
-
-# create a stream handler to write logs to the console
-stream_handler = logging.StreamHandler()
-
-# set the logging format
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-file_handler.setFormatter(formatter)
-stream_handler.setFormatter(formatter)
-
-# add the handlers to the logger
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
-
-# log some messages
-logger.info('This is an info message.')
-
-
-ap = argparse.ArgumentParser()
-ap.add_argument("DepartmentFile", help="DepartmentFile", type=str)
-ap.add_argument("Scan3dType", help="Scan3dType", type=str)
-ap.add_argument("output", help="outputValue", type=str)
-args = ap.parse_args()
-
-with open(args.DepartmentFile, 'r') as inputfile:
-    # Reading from json file
-    json_object = json.load(inputfile)
-
-postcode = json_object["postcode"]
-dp_name = json_object["region"]
-
-if args.Scan3dType == '1m': csv_path ='./lib/meshroom/nodes/scripts/RGE_Alti_1m.csv' #default
-if args.Scan3dType == '5m': csv_path = './lib/meshroom/nodes/scripts/RGE_Alti_5m.csv'
-if args.Scan3dType == '25m': csv_path = './lib/meshroom/nodes/scripts/BD_Alti_25m.csv'
-csv = open(csv_path, "r")
-csv = csv.read()
-
-lines = [x for x in csv.split('\n')]
-lines = lines[:-1]
-
-path = r'^(\d{1,}(?:[A-Z]?)),(.*[a-zA-Z]),(?:"?)(.*\w).*$'
-result = [re.search(path, line) for line in lines]
-result = [x for x in result if x != None]
-
-result = [result[i] for i in range(len(result)) if (result[i].group(2)) == dp_name]
-
-# 1. On importe la bibliothèque requests
 import requests
 import os
+from unidecode import unidecode
+import shutil
 
-print(result)
+#TODO clean
+def download(departementData: dict, Resolution, OutputFolder):
+    # log some messages
+    logging.info('This is an info message.')
 
-for i in range(len(result)):
-    links = result[i].group(3).split(',')
-    for j in range (len(links)):
-        filename = os.path.basename(links[j])
-        print(filename)
-        response = requests.get(links[j], stream=True)
+    postcode = departementData["postcode"]
+    dp_name = departementData["region"]
 
-        if response.status_code == 200:
-            logger.info("Download started")
+    logging.info(f"Resolution: {int(Resolution)}")
 
-            total_size = int(response.headers.get('content-length', 0))
-            block_size = 1024
-            wrote = 0
-            # write the data to a file
-            with open(args.output+"/"+filename, "wb") as f:
-                for data in response.iter_content(block_size):
-                    wrote = wrote + len(data)
-                    progress = wrote / total_size * 100
-                    logger.info(f'Download Progress: {progress}%')
-                    f.write(data)
-        else:
-            print('Request failed: %d' % response.status_code)
+    if int(Resolution) == 1: csv_path ='./lib/meshroom/nodes/external_files/RGE_Alti_1m.csv' #default
+    if int(Resolution) == 5: csv_path = './lib/meshroom/nodes/external_files/RGE_Alti_5m.csv'
+    if int(Resolution) == 25: csv_path = './lib/meshroom/nodes/external_files/BD_Alti_25m.csv'
+
+    logging.info(f"Path : {csv_path}")
+    csv = open(csv_path, "r")
+    csv = csv.read()
+
+    lines = [x for x in csv.split('\n')]
+    lines = lines[:-1]
+
+    path = r'^(\d{1,}(?:[A-Z]?)),(.*[a-zA-Z]),(?:"?)(.*\w).*$'
+    result = [re.search(path, line) for line in lines]
+    result = [x for x in result if x != None]
+
+    names = [re.sub('[^0-9a-zA-Z]+', ' ', str(result[i].group(2))) for i in range(len(result))]
+    dp_name = re.sub('[^0-9a-zA-Z]+', ' ', dp_name)
+
+    result = [result[i] for i in range(len(result)) if (result[i].group(1)) == dp_name]
+
+    # result = [r for r in result if (r.group(1)) == dp_name]
+
+    logging.info(result)
+
+    for i in range(len(result)):
+        links = result[i].group(3).split(',')
+        for j in range (len(links)):
+            filename = os.path.basename(links[j])
+            logging.info(filename)
+            response = requests.get(links[j], stream=True)
+
+            if response.status_code == 200:
+                logging.info("Download started")
+
+                total_size = int(response.headers.get('content-length', 0))
+                block_size = 1024
+                wrote = 0
+                # write the data to a file
+                with open(OutputFolder+"/"+filename, "wb") as f:
+                    for data in response.iter_content(block_size):
+                        wrote = wrote + len(data)
+                        progress = wrote / total_size * 100
+                        logging.info(f'Download Progress: {progress}%')
+                        f.write(data)
+            else:
+                logging.info('Request failed: %d' % response.status_code)
+    
+    return OutputFolder+"/"+filename
+
+def extractFromFolder(UnzipPath, OutputFolder):
+    for (dirpath, dirnames, filenames) in os.walk(UnzipPath):
+        # print(dirpath)
+        for inFile in filenames:
+            if inFile.endswith('.asc'):	
+                shutil.move(dirpath + "/" + inFile, OutputFolder+ "/"+ inFile)
+
+#TODO replace + "/" + with os.path.join(dirpath, inFile)
+#TODO logging instead of logger
+#TODO requirements.txt
+#TODO relocate ASCII
+#TODO OSM layers

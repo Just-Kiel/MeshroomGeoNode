@@ -12,6 +12,8 @@ import trimesh
 import sys
 import json
 
+#TODO clean
+
 argv = sys.argv
 argv = [element if "--" not in element else "" for element in argv]
 argv = [x for x in argv if x != ""]

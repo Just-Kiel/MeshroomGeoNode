@@ -1,29 +1,31 @@
-__version__ = "1.0"
+from __future__ import print_function
+
+__version__ = "1.2"
 
 from meshroom.core import desc
 
-class DisplaySunWithoutBlender(desc.CommandLineNode):
-    commandLine = 'python ./lib/meshroom/nodes/scripts/generateSun.py {inputImageValue} {outputFolderValue} {sunPositionFileValue}'
+#TODO allParams instead
+class Sun(desc.CommandLineNode):
+    commandLine = 'python ./lib/meshroom/nodes/scripts/sun.py {inputFileValue} {GPSFileValue} {outputFolderValue}'
 
     category = 'Geolocalisation'
     documentation = '''
-        This node display with the 2D map image, a plane with it on the 3D viewer.
-    '''
-    
+This node allows to display sun according to time and gps.
+'''
 
     inputs = [
         desc.File(
-            name='inputImage',
-            label='InputImage',
-            description='''Input image''',
-            value='./lib/meshroom/nodes/scripts/yellow_texture.jpg',
+            name='inputFile',
+            label='SfMData',
+            description='''input SfMData.''',
+            value= "",
             uid=[0],
         ),
         desc.File(
-            name='sunPositionFile',
-            label='Sun position file Path',
-            description='''Sun position file Path''',
-            value="",
+            name='GPSFile',
+            label='GPS coordinates file',
+            description='''GPS coordinates file.''',
+            value= "",
             uid=[0],
         ),
     ]

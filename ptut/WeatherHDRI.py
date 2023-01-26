@@ -4,14 +4,13 @@ __version__ = "1.2"
 
 from meshroom.core import desc
 
-import json
-
-class GetTimeOfDataset(desc.CommandLineNode):
-    commandLine = 'python ./lib/meshroom/nodes/scripts/getTimeDataset.py {inputFileValue} {GPSFileValue} {outputValue}'
+#TODO allParams instead
+class WeatherHDRI(desc.CommandLineNode):
+    commandLine = 'python ./lib/meshroom/nodes/scripts/weatherHDRI.py {inputFileValue} {GPSFileValue} {outputValue}'
 
     category = 'Geolocalisation'
     documentation = '''
-This node allows to get time of dataset.
+This node allows to get an HDRI file according to the weather at moment of dataset.
 '''
 
     inputs = [
@@ -43,9 +42,9 @@ This node allows to get time of dataset.
     outputs = [
         desc.File(
             name='output',
-            label='Time result',
-            description='Time from input file',
-            value=desc.Node.internalFolder + "time.json",
+            label='Hdri result',
+            description='hdri from weather folder',
+            value=desc.Node.internalFolder+'hdri.exr',
             uid=[],
         ),
     ]

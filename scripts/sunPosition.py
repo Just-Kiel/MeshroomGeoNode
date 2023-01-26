@@ -1,9 +1,7 @@
 import math
-import argparse
-from pathlib import Path
 import json
 
-
+#TODO json to dict
 def sunpos(when, location, refraction):
 # Extract the passed data
     year, month, day, hour, minute, second, timezone = when
@@ -69,19 +67,10 @@ def into_range(x, range_min, range_max):
     delta = range_max - range_min
     return (((shiftedx % delta) + delta) % delta) + range_min
 
-# get arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("method", help="method of gps", type=str)
-ap.add_argument("GPSFile", help="GPSFile", type=str)
-ap.add_argument("latitudeCustom", help="latitudeCustom", type=float)
-ap.add_argument("longitudeCustom", help="longitudeCustom", type=float)
-ap.add_argument("timeFile", help="timeFile", type=str)
-ap.add_argument("outputFile", help="outputFile", type=str)
-args = ap.parse_args()
 
-if args.method == "auto":
+def getSunPosition3DEnv(GPSFile, TimeData):
     # Opening JSON file
-    with open(args.GPSFile, 'r') as inputfile:
+    with open(GPSFile, 'r') as inputfile:
     
         # Reading from json file
         json_object = json.load(inputfile)
@@ -90,56 +79,46 @@ if args.method == "auto":
     longitude = json_object["longitude"]
 
     location=(latitude, longitude)
-else:
-    location = (args.latitudeCustom, args.longitudeCustom)
 
 
-with open(args.timeFile, 'r') as inputfile:
-    
-    # Reading from json file
-    json_object = json.load(inputfile)
+    json_object = json.loads(TimeData)
+    datetime = json_object["datetime"]
+    offsetTime = json_object["offsetTime"]
 
-datetime = json_object["datetime"]
-offsetTime = json_object["offsetTime"]
+    datetime.append(offsetTime)
 
-datetime.append(offsetTime)
+    # Close Encounters latitude, longitude
+    when = tuple(int(element) for element in datetime)
 
-# Close Encounters latitude, longitude
-when = tuple(int(element) for element in datetime)
+    # Get the Sun's apparent location in the sky
+    azimuth, elevation = sunpos(when, location, True)
 
-# Get the Sun's apparent location in the sky
-azimuth, elevation = sunpos(when, location, True)
+    ##### calculate position of the sun according to azimuth and elevation
+    earthSunDistance = 150000000 # 1ua
+    distance = earthSunDistance/math.sin(elevation)
 
+    # print("Distance point-sun : ", distance)
 
-##### calculate position of the sun according to azimuth and elevation
-earthSunDistance = 150000000 # 1ua
-distance = earthSunDistance/math.sin(elevation)
+    # distance² = sol²+earthSunDistance²
+    # sol² = distance² - earthSunDistance²
+    floorDistance = math.sqrt(math.pow(distance, 2) - math.pow(earthSunDistance, 2))
 
-print("Distance point-sun : ", distance)
+    divideFactor = 10000000
 
-# distance² = sol²+earthSunDistance²
-# sol² = distance² - earthSunDistance²
+    resultDistance = distance/divideFactor
+    resultFloorDistance = floorDistance/divideFactor
+    resultEarthSunDistance = earthSunDistance/divideFactor
 
-floorDistance = math.sqrt(math.pow(distance, 2) - math.pow(earthSunDistance, 2))
+    # Data to be written
+    output = {
+        "azimuth": azimuth,
+        "elevation": elevation,
+        "earthSun": resultEarthSunDistance,
+        "heightFromSun": resultFloorDistance,
+        "pointSun": resultDistance 
+    }
 
-divideFactor = 10000000
+    # Serializing json
+    json_object = json.dumps(output, indent=4)
 
-resultDistance = distance/divideFactor
-resultFloorDistance = floorDistance/divideFactor
-resultEarthSunDistance = earthSunDistance/divideFactor
-
-# Data to be written
-output = {
-    "azimuth": azimuth,
-    "elevation": elevation,
-    "earthSun": resultEarthSunDistance,
-    "heightFromSun": resultFloorDistance,
-    "pointSun": resultDistance 
-}
-
-# Serializing json
-json_object = json.dumps(output, indent=4)
-
-# Writing to sample.json
-with open(args.outputFile, "w") as outfile:
-    outfile.write(json_object)
+    return json_object

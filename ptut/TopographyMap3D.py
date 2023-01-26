@@ -4,12 +4,14 @@ __version__ = "1.2"
 
 from meshroom.core import desc
 
-class GetOSMData(desc.CommandLineNode):
-    commandLine = 'python ./lib/meshroom/nodes/scripts/get_OSM_data.py {allParams}'
+#TODO clean
+class TopographyMap3D(desc.CommandLineNode):
+    commandLine = 'python ./lib/meshroom/nodes/scripts/DEMto3DFULL.py {allParams}'
 
     category = 'Geolocalisation'
+
     documentation = '''
-This node allows to get an image of the localisation (like a screenshot of OpenStreetMap).
+This node allows to get SRTM Data represented as a mesh of the localisation.
 '''
 
     inputs = [
@@ -45,12 +47,28 @@ This node allows to get an image of the localisation (like a screenshot of OpenS
             range=(-90.0, 90.0, 0.0001),
             uid=[0],
         ),
-        desc.IntParam(
-            name="dist",
-            label="Distance From Input Point",
-            description="Distance from input point to get image.",
-            value=550,
-            range=(30, 1000, 1.0), # should be more than 30, otherwise doesn't work
+        desc.FloatParam(
+            name="kilometers",
+            label="Bounding Box in kilometers",
+            description="Bounding Box in kilometers",
+            value=100,
+            range=(1, 1000),
+            uid=[0],
+        ),
+        desc.FloatParam(
+            name="scale",
+            label="Scale",
+            description="Scale of the map",
+            value=0.2,
+            range=(0, 1),
+            uid=[0],
+        ),
+        desc.FloatParam(
+            name="verticalTranslation",
+            label="Vertical translation",
+            description="Vertical translation",
+            value=10,
+            range=(-100, 100),
             uid=[0],
         ),
         desc.ChoiceParam(
@@ -61,15 +79,15 @@ This node allows to get an image of the localisation (like a screenshot of OpenS
             values=['critical', 'error', 'warning', 'info', 'debug'],
             exclusive=True,
             uid=[],
-            ),
+        ),
     ]
 
     outputs = [
         desc.File(
             name='output',
-            label='Image geolocalisation',
-            description='''Image geolocalisation.''',
-            value= desc.Node.internalFolder + "combine.png",
+            label='Output',
+            description='''Output.''',
+            value= desc.Node.internalFolder + "result.obj",
             uid=[0],
         ),
         desc.File(

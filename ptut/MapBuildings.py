@@ -2,6 +2,7 @@ __version__ = "1.0"
 
 from meshroom.core import desc
 
+#TODO allParams instead
 class MapBuildings(desc.CommandLineNode):
     commandLine = 'python ./lib/meshroom/nodes/scripts/OSMBuildings.py {methodValue} {gpsFileValue} {latInputPointValue} {lonInputPointValue} {outputObjValue} {geoJsonValue}'
 

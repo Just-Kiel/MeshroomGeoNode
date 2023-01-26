@@ -1,38 +1,45 @@
 # import module
 from geopy.geocoders import Nominatim
 import json
-import argparse
 
-ap = argparse.ArgumentParser()
-ap.add_argument("GPSFile", help="GPSFile", type=str)
-ap.add_argument("output", help="output", type=str)
-args = ap.parse_args()
+## return region number (as string to handle corse) from the postCode
+def regionFromPostcode(postCode: int):
+    firstTwoNumber = postCode//1000
+    # dom tom
+    if firstTwoNumber == 97:
+        return str(postCode//100)
+    # corse
+    elif firstTwoNumber == 20:
+        return "2A" if postCode < 20200 else "2B"
+    else:
+        return str(firstTwoNumber)
 
-# Opening JSON file
-with open(args.GPSFile, 'r') as GPSfile:
-    # Reading from json file
-    json_gps = json.load(GPSfile)
+def getDepartement(GPSData):
+    # Opening JSON file
+    with open(GPSData, 'r') as GPSfile:
+        # Reading from json file
+        json_gps = json.load(GPSfile)
 
 
-# initialize Nominatim API
-geolocator = Nominatim(user_agent="getRegion")
-# Latitude & Longitude input
-Latitude = json_gps["latitude"]
-Longitude = json_gps["longitude"]
- 
-location = geolocator.reverse(str(Latitude)+","+str(Longitude))
+    # initialize Nominatim API
+    geolocator = Nominatim(user_agent="getRegion")
+    # Latitude & Longitude input
+    Latitude = json_gps["latitude"]
+    Longitude = json_gps["longitude"]
+    
+    location = geolocator.reverse(str(Latitude)+","+str(Longitude))
 
-address = location.raw['address']
+    address = location.raw['address']
+    print(address)
+    
+    # #region = str(address["county"]).encode('utf-8').decode('latin_1') if "county" in address else str(address["state"]).encode('utf-8').decode('latin_1')
 
-# Data to be written
-output = {
-    "region": address["county"],
-    "postcode": address["postcode"]
-}
+    region = str(address["county" if "county" in address else "state"]).encode('utf-8').decode('latin_1')
 
-# Serializing json
-json_object = json.dumps(output, indent=4)
+    return {
+        "region": regionFromPostcode(int(address["postcode"])),
+        "postcode": address["postcode"]
+    }
 
-# Writing to sample.json
-with open(args.output, "w") as outfile:
-    outfile.write(json_object)
+
+    
