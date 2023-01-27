@@ -10,20 +10,18 @@ from shapely import Polygon
 
 #TODO args better
 ap = argparse.ArgumentParser()
-ap.add_argument("method", help="method of gps", type=str)
-ap.add_argument("GPSFile", help="GPSFile", type=str)
-ap.add_argument("latitudeCustom", help="latitudeCustom", type=float)
-ap.add_argument("longitudeCustom", help="longitudeCustom", type=float)
-ap.add_argument("outputObj", help="output obj", type=str)
-ap.add_argument("geoJson", help="output GeoJson", type=str)
+ap.add_argument("--method", help="method of gps", type=str)
+ap.add_argument("--GPSFile", help="GPSFile", type=str)
+ap.add_argument("--latInputPoint", help="latitudeCustom", type=float)
+ap.add_argument("--lonInputPoint", help="longitudeCustom", type=float)
+ap.add_argument("--geoJson", help="output GeoJson", type=str)
+ap.add_argument("--outputObj", help="output obj", type=str)
 args = ap.parse_args()
-
 
 #what method of localisation
 if args.method == "auto":
     # Opening JSON file
     with open(args.GPSFile, 'r') as inputfile:
-    
         # Reading from json file
         json_object = json.load(inputfile)
     
@@ -60,7 +58,6 @@ data = json.loads(response.text)
 with open(args.geoJson, 'w') as f:
   json.dump(data, f)
   
-
 #get the polygons and heights in the GeoJSON
 gdf = gpd.read_file(args.geoJson)
 
@@ -73,8 +70,6 @@ for polygon in gdf[gdf.geometry.type == "Polygon"].geometry:
 for height in gdf.height:
     heights_geojson.append(height)
     
-
-
 #convert the coordinates for the mesh
 factor = 1000
 min_heights = min(heights_geojson)
@@ -142,6 +137,5 @@ with open(args.outputObj, 'w') as file:
         file,
         file_type='obj',
     )
-    
     
   #TODO si on est sur un bord de map, récupérer les maps autour, faire un paramètre

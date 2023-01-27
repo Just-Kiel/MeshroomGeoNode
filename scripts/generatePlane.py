@@ -16,7 +16,7 @@ def generatePlane(TexturePath, OutputFolder, Output):
 
     # create plane
     plane = trimesh.Trimesh(
-        vertices=[[-1, 0, 1], [1, 0, 1], [1, 0, -1], [-1, 0, -1]],
+        vertices=[[-15, 0, 15], [15, 0, 15], [15, 0, -15], [-15, 0, -15]],
         faces=[[0, 1, 2], [0, 2, 3]],
     )
 

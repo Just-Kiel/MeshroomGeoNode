@@ -1,7 +1,6 @@
 import math
 import json
 
-#TODO json to dict
 def sunpos(when, location, refraction):
 # Extract the passed data
     year, month, day, hour, minute, second, timezone = when
@@ -110,15 +109,10 @@ def getSunPosition3DEnv(GPSFile, TimeData):
     resultEarthSunDistance = earthSunDistance/divideFactor
 
     # Data to be written
-    output = {
+    return {
         "azimuth": azimuth,
         "elevation": elevation,
         "earthSun": resultEarthSunDistance,
         "heightFromSun": resultFloorDistance,
         "pointSun": resultDistance 
     }
-
-    # Serializing json
-    json_object = json.dumps(output, indent=4)
-
-    return json_object

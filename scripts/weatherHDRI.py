@@ -2,25 +2,27 @@ import argparse
 import getTimeDataset
 import get_weather
 import get_hdri
+import logging
 
-#TODO logging + better args
 ap = argparse.ArgumentParser()
-ap.add_argument("inputFile", help="input SFM data", type=str)
-ap.add_argument("GPSFile", help="GPSFile", type=str)
-ap.add_argument("output", help="output", type=str)
+ap.add_argument("--inputFile", help="input SFM data", type=str)
+ap.add_argument("--GPSFile", help="GPSFile", type=str)
+ap.add_argument("--output", help="output", type=str)
 args = ap.parse_args()
 
+logging.basicConfig(level=logging.INFO)
+
 def main():
-    print("Weather !")
+    logging.info("Weather !")
     time = getTimeDataset.timeOfDataset(args.inputFile, args.GPSFile)
-    print(f"Time of Dataset : {time}")
+    logging.info(f"Time of Dataset : {time}")
 
     weather = get_weather.getWeather(args.GPSFile, time)
-    print(f"Weather : {weather}")
+    logging.info(f"Weather : {weather}")
 
     get_hdri.getHDRI(weather, args.output)
 
-    print("Weather HDRI generated")
+    logging.info("Weather HDRI generated")
 
 if __name__ == "__main__":
     main()

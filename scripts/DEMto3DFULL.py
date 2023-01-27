@@ -1,32 +1,34 @@
 import requests
-import pandas as pd
+import argparse
 import math
 from math import *
 import numpy as np
 import rasterio
 import mayavi.mlab as mlab
-import trimesh
 #necessite pyqt5
-
-# récupération des arguments
-import sys
 import json
 
-#TODO clean
-
-argv = sys.argv
-argv = [element if "--" not in element else "" for element in argv]
-argv = [x for x in argv if x != ""]
+ap = argparse.ArgumentParser()
+ap.add_argument("--method", help="method", type=str)
+ap.add_argument("--GPSFile", help="GPSFile", type=str)
+ap.add_argument("--latInputPoint", help="latInputPoint", type=str)
+ap.add_argument("--lonInputPoint", help="lonInputPoint", type=str)
+ap.add_argument("--kilometers", help="kilometers", type=str)
+ap.add_argument("--scale", help="scale", type=str)
+ap.add_argument("--verticalTranslation", help="verticalTranslation", type=str)
+ap.add_argument("--output", help="output", type=str)
+ap.add_argument("--outputFolder", help="outputFolder", type=str)
+args = ap.parse_args()
 
 #all arguments
-method = argv[1]
-GPSauto = argv[2]
-pointCustom = (float(argv[3]), float(argv[4]))
-kilometers = float(argv[5])
-scale = float(argv[6])
-translation = float(argv[7])
-finalFp = argv[9]
-path = argv[10]
+method = args.method
+GPSauto = args.GPSFile
+pointCustom = (float(args.latInputPoint), float(args.lonInputPoint))
+kilometers = float(args.kilometers)
+scale = float(args.scale)
+translation = float(args.verticalTranslation)
+finalFp = args.output
+folderPath = args.outputFolder
 
 #what method of localisation
 if method == "auto":
@@ -58,10 +60,10 @@ west = str(lngMin)
 
 url = 'https://portal.opentopography.org/API/globaldem?demtype=SRTMGL1&south='+south+'&north='+north+'&west='+west+'&east='+east+'&outputFormat=GTiff&API_Key=b3aae2cb0f7c823f84f2d2e98651c906'
 response = requests.get(url)
-open(path +'raster2.tif','wb').write(response.content)
+open(folderPath +'raster2.tif','wb').write(response.content)
 
 mlab.figure('Model 3D')
-with rasterio.open(path +"raster2.tif") as src:
+with rasterio.open(folderPath +"raster2.tif") as src:
 	elev = src.read(1)
 	#print(elev.shape)
 nrows, ncols = elev.shape

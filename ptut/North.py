@@ -4,9 +4,8 @@ __version__ = "1.2"
 
 from meshroom.core import desc
 
-#TODO allParams instead
 class North(desc.CommandLineNode):
-    commandLine = 'python ./lib/meshroom/nodes/scripts/north.py {GPSFileValue} {outputPathValue} {outputFolderValue}'
+    commandLine = 'python ./lib/meshroom/nodes/scripts/north.py {allParams}'
 
     category = 'Geolocalisation'
     documentation = '''
@@ -29,7 +28,6 @@ This node allows to get north around dataset.
             label='Output',
             description='''Output''',
             value=desc.Node.internalFolder + "north.obj",
-            group = "",
             uid=[],
         ),
         desc.File(

@@ -4,9 +4,8 @@ __version__ = "1.2"
 
 from meshroom.core import desc
 
-#TODO allParams instead
 class Map2D(desc.CommandLineNode):
-    commandLine = 'python ./lib/meshroom/nodes/scripts/map2D.py {GPSFileValue} {distValue} {outputPathValue} {outputFolderValue}'
+    commandLine = 'python ./lib/meshroom/nodes/scripts/map2D.py {allParams}'
 
     category = 'Geolocalisation'
     documentation = '''
@@ -37,7 +36,6 @@ This node allows to get 2D map of where is the dataset.
             label='Output',
             description='''Output''',
             value=desc.Node.internalFolder + "map2D.obj",
-            group = "",
             uid=[],
         ),
         desc.File(

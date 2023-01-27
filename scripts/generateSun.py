@@ -2,7 +2,6 @@ from pathlib import Path
 import trimesh
 import numpy as np
 from PIL import Image
-import json
 
 def generateSun(output, sunData):
     path = "./lib/meshroom/nodes/scripts/yellow_texture.jpg"
@@ -22,13 +21,9 @@ def generateSun(output, sunData):
     # Y = floor distance
     # Z = sun earth distance
     # rotate(azimuth)
-
-    # Reading from json file
-    json_object = json.loads(sunData)
-
-    offsetY = json_object["heightFromSun"]
-    offsetZ = json_object["earthSun"]
-    rotation = json_object["azimuth"]
+    offsetY = sunData["heightFromSun"]
+    offsetZ = sunData["earthSun"]
+    rotation = sunData["azimuth"]
 
     # create plane
     sphere = trimesh.creation.uv_sphere(5)

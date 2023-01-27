@@ -34,7 +34,7 @@ This node allows to get GPS coordinates of a file.
 
     def processChunk(self, chunk):
         try:
-            chunk.logManager.start(chunk.node.verboseLevel.value)
+            print("GPS")
 
             # Opening JSON file
             with open(chunk.node.inputFile.value, 'r') as inputfile:

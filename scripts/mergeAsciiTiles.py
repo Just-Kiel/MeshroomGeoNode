@@ -2,11 +2,10 @@ import numpy as np
 import os
 import re
 
-from requests import head
 import json
 import logging
 
-#TODO logging + clean
+#TODO logging
 
 def getTile(point, scale):
     moduloX = point[0]%scale
@@ -85,7 +84,7 @@ def mergeASCII(InputFolder, OutputFolder, lambertData):
     result= []
 
     for (dirpath, dirnames, filenames) in os.walk(inDir):
-        print(dirpath)
+        logging.info(dirpath)
         for i in range(len(filenames)):
             if filenames[i].endswith('.asc'):
                 result.append(re.search(path, dirpath+"/"+filenames[i]))
@@ -95,13 +94,11 @@ def mergeASCII(InputFolder, OutputFolder, lambertData):
 
     sourcePoint = [int(json_object["latitude"]//1000),int(json_object["longitude"]//1000)]
 
-    print(f"Point: {sourcePoint}")
+    logging.info(f"Point: {sourcePoint}")
     dist = 5
     scale = int(getScale(result[0].group(1)))
 
     logging.info(scale)
-
-    tileCenter = getTile(sourcePoint, scale)
 
     pointTopLeft = [sourcePoint[0]-dist, sourcePoint[1]+dist]
     pointBottomRight = [sourcePoint[0]+dist, sourcePoint[1]-dist]
@@ -117,7 +114,7 @@ def mergeASCII(InputFolder, OutputFolder, lambertData):
             tilesSameX.append([x, y])
         tiles.append(tilesSameX)
 
-    print(f"TILES : {tiles}")
+    logging.info(f"TILES : {tiles}")
 
     fp = []
     taby = []
@@ -134,8 +131,8 @@ def mergeASCII(InputFolder, OutputFolder, lambertData):
     for i in range(len(fp)):
         fp[i].sort(reverse = True)
 
-    print(fp)
-    print(taby)
+    logging.info(fp)
+    logging.info(taby)
 
     # find max length of all tabs and fill tabs with -1 value to reach maxlength
     maxdepth=0
@@ -143,7 +140,7 @@ def mergeASCII(InputFolder, OutputFolder, lambertData):
         if (len(taby[i])>maxdepth):
             maxdepth = len(taby[i])
 
-    print(f"max length : {maxdepth}")
+    logging.info(f"max length : {maxdepth}")
 
     for i in range(len(taby)):
         if (len(taby[i]) < maxdepth) :
@@ -167,17 +164,17 @@ def mergeASCII(InputFolder, OutputFolder, lambertData):
                 if (int(scale) == 1):
                     fp[c].insert(r, 'external_files/ascii_nodata_1M.asc')
                 
-    print(fp)
+    logging.info(fp)
 
-    print(dirpath)
+    logging.info(dirpath)
 
-    print("vertical merge \n")
+    logging.info("vertical merge \n")
     verticalMergeTab = [None]*len(fp)
     for i in range(len(fp)):
         verticalMergeTab[i] = VerticalMergeAscii(fp[i], i, OutputFolder)
 
-    print(verticalMergeTab)
+    logging.info(verticalMergeTab)
 
     finalMerge = HorizontalMergeAscii(verticalMergeTab, OutputFolder)
 
-    print(f"FINAL MERGE : {finalMerge}")
+    logging.info(f"FINAL MERGE : {finalMerge}")

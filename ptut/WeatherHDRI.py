@@ -4,9 +4,8 @@ __version__ = "1.2"
 
 from meshroom.core import desc
 
-#TODO allParams instead
 class WeatherHDRI(desc.CommandLineNode):
-    commandLine = 'python ./lib/meshroom/nodes/scripts/weatherHDRI.py {inputFileValue} {GPSFileValue} {outputValue}'
+    commandLine = 'python ./lib/meshroom/nodes/scripts/weatherHDRI.py {allParams}'
 
     category = 'Geolocalisation'
     documentation = '''
@@ -28,16 +27,7 @@ This node allows to get an HDRI file according to the weather at moment of datas
             value= "",
             uid=[0],
         ),
-        desc.ChoiceParam(
-            name='verboseLevel',
-            label='Verbose Level',
-            description='''verbosity level (critical, error, warning, info, debug).''',
-            value='info',
-            values=['critical', 'error', 'warning', 'info', 'debug'],
-            exclusive=True,
-            uid=[],
-            ),
-        ]
+    ]
 
     outputs = [
         desc.File(

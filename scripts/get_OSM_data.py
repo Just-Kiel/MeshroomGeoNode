@@ -76,20 +76,20 @@ def OSM_picture(GPSData, folder, dist):
 
 
     # resize image before cropping the other one
-    ratio = image2.width / image2.height
-    new_height = 1590
-    new_width = int(ratio * new_height)
+    # ratio = image2.width / image2.height
+    # new_height = 1590
+    # new_width = int(ratio * new_height)
 
-    image2 = image2.resize((new_width, new_height))
-    image2.save(roads)
-    image2 = Image.open(roads)
-    #TODO waterways crop
+    # image2 = image2.resize((new_width, new_height))
+    # image2.save(roads)
+    # image2 = Image.open(roads)
+    # #TODO waterways crop
 
-    # cropping image
-    crop_size = ((image1.width - image2.width)/2, 0,image2.width + ((image1.width - image2.width)/2), image1.height)
-    image1 = image1.crop(crop_size)
-    image1.save(buildings)
-    image1 = Image.open(buildings)
+    # # cropping image
+    # crop_size = ((image1.width - image2.width)/2, 0,image2.width + ((image1.width - image2.width)/2), image1.height)
+    # image1 = image1.crop(crop_size)
+    # image1.save(buildings)
+    # image1 = Image.open(buildings)
 
     # merging of 2 images (layers)
     image4 = ImageChops.add(image2, image1)

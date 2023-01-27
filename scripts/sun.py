@@ -3,11 +3,11 @@ import sunPosition
 import argparse
 import generateSun
 
-#TODO args better
 ap = argparse.ArgumentParser()
-ap.add_argument("inputFile", help="input SFM data", type=str)
-ap.add_argument("GPSFile", help="GPSFile", type=str)
-ap.add_argument("outputFolder", help="outputFolder", type=str)
+ap.add_argument("--inputFile", help="input SFM data", type=str)
+ap.add_argument("--GPSFile", help="GPS file", type=str)
+ap.add_argument("--outputPath", help="output path", type=str)
+ap.add_argument("--outputFolder", help="output folder", type=str)
 args = ap.parse_args()
 
 

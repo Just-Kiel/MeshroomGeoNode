@@ -4,7 +4,6 @@ __version__ = "1.2"
 
 from meshroom.core import desc
 
-#TODO clean
 class TopographyMap3D(desc.CommandLineNode):
     commandLine = 'python ./lib/meshroom/nodes/scripts/DEMto3DFULL.py {allParams}'
 
@@ -70,15 +69,6 @@ This node allows to get SRTM Data represented as a mesh of the localisation.
             value=10,
             range=(-100, 100),
             uid=[0],
-        ),
-        desc.ChoiceParam(
-            name='verboseLevel',
-            label='Verbose Level',
-            description='''verbosity level (critical, error, warning, info, debug).''',
-            value='info',
-            values=['critical', 'error', 'warning', 'info', 'debug'],
-            exclusive=True,
-            uid=[],
         ),
     ]
 

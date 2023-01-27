@@ -2,13 +2,12 @@ __version__ = "1.0"
 
 from meshroom.core import desc
 
-#TODO allParams instead
 class MapBuildings(desc.CommandLineNode):
-    commandLine = 'python ./lib/meshroom/nodes/scripts/OSMBuildings.py {methodValue} {gpsFileValue} {latInputPointValue} {lonInputPointValue} {outputObjValue} {geoJsonValue}'
+    commandLine = 'python ./lib/meshroom/nodes/scripts/OSMBuildings.py {allParams}'
 
     category = 'Geolocalisation'
     documentation = '''
-        This node display the 2,5D Map with OSM Buildings data.
+        This node displays the 2,5D Map with OSM Buildings data.
     '''
     
     inputs = [
@@ -16,13 +15,13 @@ class MapBuildings(desc.CommandLineNode):
             name='method',
             label='GPS Coordinates Method',
             description='''GPS coordinates method''',
-            value="custom",
+            value="auto",
             values=("custom", "auto"),
             exclusive=True,
             uid=[0],
         ),
         desc.File(
-            name='gpsFile',
+            name='GPSFile',
             label='GPS Coordinates File',
             description='''GPS coordinates file''',
             value= "",
@@ -59,7 +58,6 @@ class MapBuildings(desc.CommandLineNode):
             label='Output Obj',
             description='''Output''',
             value=desc.Node.internalFolder + "result.obj",
-            group = "",
             uid=[],
         ),
     ]
